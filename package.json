@@ -1,0 +1,20 @@
+{
+  "name": "proyecto-backend-300h",
+  "version": "1.0.0",
+  "main": "backend.js",
+  "scripts": {
+    "start":"node backend.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yohnnasner/Proyecto-backend-300h.git"
+  },
+  "author": "Yohn Richard Nasner Benavides",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yohnnasner/Proyecto-backend-300h/issues"
+  },
+  "homepage": "https://github.com/Yohnnasner/Proyecto-backend-300h#readme",
+  "description": ""
+}
