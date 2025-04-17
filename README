@@ -1,0 +1,149 @@
+# Proyecto backend de 300 h
+Este README proporciona una guía para configurar y ejecutar el backend de la aplicación.
+
+## Prerrequisitos
+
+Asegúrate de tener instalado lo siguiente en tu sistema:
+
+* **Node.js:** [https://nodejs.org/](https://nodejs.org/) (Se recomienda la última versión LTS)
+* **npm (Node Package Manager):** Viene instalado con Node.js.
+* **MongoDB:** [https://www.mongodb.com/try/download/community](https://www.mongodb.com/try/download/community) (Asegúrate de que el servidor de MongoDB esté en ejecución)
+
+## Configuración del Backend
+
+Sigue estos pasos para configurar el backend de la aplicación:
+
+1.  **Navegar a la carpeta backend:**
+    ```bash
+    cd backend
+    ```
+
+2.  **Inicializar el proyecto Node.js:**
+    ```bash
+    npm init -y
+    ```
+    Este comando creará un archivo `package.json` con la configuración predeterminada del proyecto.
+
+3.  **Instalar las dependencias necesarias:**
+    ```bash
+    npm install express mongoose dotenv cors
+    ```
+    Este comando instalará los siguientes paquetes:
+    * `express`: Framework web minimalista y flexible para Node.js.
+    * `mongoose`: Librería para interactuar con MongoDB de manera elegante y orientada a objetos.
+    * `dotenv`: Permite cargar variables de entorno desde un archivo `.env`.
+    * `cors`: Middleware para habilitar el Intercambio de Recursos de Origen Cruzado (CORS).
+
+4.  **Crear los archivos básicos:**
+    Crea los siguientes archivos en la carpeta `backend`:
+    * `app.js`: Contendrá la lógica principal del servidor Express.
+    * `.env`: Almacenará las variables de entorno, como la URI de conexión a MongoDB.
+    * `.gitignore`: Especificará los archivos y directorios que Git debe ignorar.
+
+5.  **Agregar `node_modules` al `.gitignore`:**
+    Abre el archivo `.gitignore` (si no existe, créalo) y agrega la siguiente línea:
+    ```
+    node_modules
+    ```
+    Esto evitará que la carpeta `node_modules` (donde se guardan las dependencias) se incluya en el repositorio Git.
+
+## Configuración del Servidor con Express.js (Archivo `app.js`)
+
+1.  **Importar Express:**
+    En el archivo `app.js`, agrega la siguiente línea para importar el módulo `express`:
+    ```javascript
+    const express = require('express');
+    const app = express();
+    ```
+
+2.  **Configurar un servidor básico:**
+    Puedes configurar el puerto en el que escuchará el servidor y comenzar a escucharlo:
+    ```javascript
+    const port = process.env.PORT || 3000; // Utiliza la variable de entorno PORT o el puerto 3000 por defecto
+
+    app.listen(port, () => {
+      console.log(`Servidor escuchando en el puerto ${port}`);
+    });
+    ```
+
+3.  **Definir un endpoint inicial:**
+    Agrega una ruta básica para verificar que el servidor esté funcionando correctamente:
+    ```javascript
+    app.get('/', (req, res) => {
+      res.send('¡El servidor backend está funcionando!');
+    });
+    ```
+
+4.  **Implementar la conexión a MongoDB usando Mongoose:**
+    Primero, instala `mongoose` si aún no lo has hecho:
+    ```bash
+    npm install mongoose
+    ```
+    Luego, en `app.js`, importa `mongoose` y configura la conexión. Asegúrate de tener la URI de conexión a tu base de datos MongoDB en el archivo `.env` (por ejemplo, `MONGODB_URI=mongodb://localhost:27017/nombre_de_tu_base_de_datos`).
+
+    ```javascript
+    const mongoose = require('mongoose');
+    require('dotenv').config(); // Carga las variables de entorno del archivo .env
+
+    const mongodbUri = process.env.MONGODB_URI;
+
+    mongoose.connect(mongodbUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    })
+    .then(() => {
+      console.log('Conexión exitosa a MongoDB');
+    })
+    .catch((err) => {
+      console.error('Error al conectar a MongoDB:', err);
+    });
+    ```
+
+5.  **Probar la conexión con MongoDB:**
+    Ejecuta el servidor (ver la sección "Iniciar el Servidor") y verifica en la consola si aparece el mensaje "Conexión exitosa a MongoDB". Si hay algún error, revisa la URI de conexión y asegúrate de que el servidor de MongoDB esté en ejecución.
+
+## Modelos de Datos con Mongoose (Carpeta `backend/models`)
+
+1.  **Crear la carpeta `backend/models`:**
+    Si aún no existe, crea una carpeta llamada `models` dentro del directorio `backend`.
+
+2.  **Crear los archivos de los modelos:**
+    Dentro de la carpeta `backend/models`, crea los archivos para tus modelos.
+
+3.  **Modelo de Usuario (`backend/models/Usuario.js`):**
+    Este modelo es obligatorio y debe incluir al menos los siguientes campos:
+    ```javascript
+    const mongoose = require('mongoose');
+
+    const usuarioSchema = new mongoose.Schema({
+      nombre: { type: String, required: true },
+      correoElectronico: { type: String, required: true, unique: true },
+      contrasena: { type: String, required: true },
+      rol: { type: String, enum: ['admin', 'usuario'], default: 'usuario' },
+    });
+
+    module.exports = mongoose.model('Usuario', usuarioSchema);
+    ```
+
+4.  **Otros Modelos (Dependiendo del Proyecto):**
+
+    * **Blog o similar a una revista digital:**
+        * `Publicacion.js`: `titulo`, `contenido`, `autor`, `fechaCreacion`, `categoria`, `comentarios` (referencia al modelo Comentario).
+        * `Categoria.js`: `nombre`.
+        * `Comentario.js`: `autor` (referencia al modelo Usuario), `contenido`, `fechaCreacion`, `publicacion` (referencia al modelo Publicacion).
+
+    * **Similar a una aplicación de gestión:**
+        * `Rol.js`: `nombre`, `permisos` (array de strings).
+        * Otros modelos específicos de los datos que gestione la aplicación (ej. `Producto.js`, `Cliente.js`, `Pedido.js`, etc.).
+
+    * **Proyecto con cliente real:**
+        Crea los modelos que se adapten a las necesidades específicas del cliente y la lógica del negocio.
+
+    **IMPORTANTE:** Planifica cuidadosamente la estructura de tus modelos, incluyendo los campos, tipos de datos, validaciones y relaciones entre ellos utilizando las funcionalidades de Mongoose (como `Schema.Types.ObjectId` para referencias).
+
+## Iniciar el Servidor
+
+Para iniciar el servidor backend, ejecuta el siguiente comando en la terminal dentro de la carpeta `backend`:
+
+```bash
+node app.js
